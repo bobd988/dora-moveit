@@ -26,17 +26,28 @@ class MotionCommander:
         self.waiting_for_execution = False
         
         # Define target configurations for Panda robot
-        self.home_config = np.array([0.0, -0.785, 0.0, -2.356, 0.0, 1.571, 0.785])
-        
-        # Pick/place configurations
+        # Joint limits: [-2.90, 2.90], [-1.76, 1.76], [-2.90, 2.90], [-3.07, -0.07],
+        #               [-2.90, 2.90], [-0.02, 3.75], [-2.90, 2.90]
+
+        # Home position - robot arm up and centered (easy starting pose)
+        self.home_config = np.array([0.0, 0.0, 0.0, -1.57, 0.0, 1.57, 0.0])
+
+        # Simple pick/place configurations - small movements, easy to plan
         self.poses = [
-            ("home", np.array([0.0, -0.785, 0.0, -2.356, 0.0, 1.571, 0.785])),
-            ("pre_pick", np.array([0.3, 0.0, 0.0, -1.8, 0.0, 1.8, 0.785])),
-            ("pick", np.array([0.3, 0.3, 0.0, -1.5, 0.0, 1.8, 0.785])),
-            ("lift", np.array([0.3, 0.0, 0.0, -1.8, 0.0, 1.8, 0.785])),
-            ("pre_place", np.array([-0.3, 0.0, 0.0, -1.8, 0.0, 1.8, 0.785])),
-            ("place", np.array([-0.3, 0.3, 0.0, -1.5, 0.0, 1.8, 0.785])),
-            ("retreat", np.array([-0.3, 0.0, 0.0, -1.8, 0.0, 1.8, 0.785])),
+            # First go to a safe home position
+            ("home", np.array([0.0, 0.0, 0.0, -1.57, 0.0, 1.57, 0.0])),
+            # Move to right side
+            ("right", np.array([0.5, 0.0, 0.0, -1.57, 0.0, 1.57, 0.0])),
+            # Move down slightly
+            ("right_low", np.array([0.5, 0.3, 0.0, -1.2, 0.0, 1.57, 0.0])),
+            # Back up
+            ("right", np.array([0.5, 0.0, 0.0, -1.57, 0.0, 1.57, 0.0])),
+            # Move to left side
+            ("left", np.array([-0.5, 0.0, 0.0, -1.57, 0.0, 1.57, 0.0])),
+            # Move down slightly
+            ("left_low", np.array([-0.5, 0.3, 0.0, -1.2, 0.0, 1.57, 0.0])),
+            # Back to home
+            ("home", np.array([0.0, 0.0, 0.0, -1.57, 0.0, 1.57, 0.0])),
         ]
         
         self.pose_idx = 0

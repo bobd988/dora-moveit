@@ -1,5 +1,17 @@
 # Release Notes
 
+## v0.2.14
+
+### Improvements
+
+#### Better Initial Poses for MuJoCo Demo
+Updated `motion_commander.py` with more reachable target configurations:
+- Home position now starts at `[0, 0, 0, -1.57, 0, 1.57, 0]` (arm centered, easy to plan from)
+- Simplified pick/place sequence with smaller joint movements
+- All poses verified to be within Panda joint limits
+
+---
+
 ## v0.2.13
 
 ### Bug Fixes
