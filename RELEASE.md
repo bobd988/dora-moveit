@@ -1,5 +1,18 @@
 # Release Notes
 
+## v0.2.15
+
+### Bug Fixes
+
+#### Fix "Start configuration is in collision" Error
+The robot's zero configuration was falsely detected as in collision with environment:
+- Moved ground plane from z=-0.01 to z=-0.05 to clear robot base
+- Moved table further away (x=0.6) and lower (z=0.3) to avoid arm collisions
+- Updated box_obstacle position to [0.4, 0.3, 0.5] with smaller size
+- Applied same fixes to both `planning_scene_op.py` and `planner_ompl_with_collision_op.py`
+
+---
+
 ## v0.2.14
 
 ### Improvements

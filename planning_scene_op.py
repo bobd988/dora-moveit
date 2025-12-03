@@ -126,25 +126,25 @@ class PlanningSceneOperator:
         print("Planning Scene operator initialized")
         
     def _setup_default_scene(self):
-        """Set up default scene with table and ground"""
-        # Ground plane
+        """Set up default scene with ground plane"""
+        # Ground plane - placed lower to avoid collision with robot base
         self.add_object(SceneObject(
             name="ground",
             obj_type="box",
-            position=np.array([0.0, 0.0, -0.01]),
+            position=np.array([0.0, 0.0, -0.05]),
             dimensions=np.array([2.0, 2.0, 0.02]),
             color=[0.3, 0.3, 0.3, 1.0]
         ))
-        
-        # Table
+
+        # Table moved further away and lower to avoid collisions
         self.add_object(SceneObject(
             name="table",
             obj_type="box",
-            position=np.array([0.5, 0.0, 0.4]),
-            dimensions=np.array([0.6, 0.8, 0.02]),
+            position=np.array([0.6, 0.0, 0.3]),
+            dimensions=np.array([0.4, 0.6, 0.02]),
             color=[0.6, 0.4, 0.2, 1.0]
         ))
-        
+
         print(f"  Default scene: {len(self.world_objects)} objects")
         
     def add_object(self, obj: SceneObject) -> bool:

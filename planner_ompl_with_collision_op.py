@@ -474,9 +474,9 @@ class PlannerOperator:
         self.plan_count = 0
         self.last_scene_version = -1  # Track scene version to avoid redundant updates
 
-        # Add default obstacles
-        self.planner.add_obstacle(create_box("table", np.array([0.5, 0.0, 0.4]), np.array([0.6, 0.8, 0.02])))
-        self.planner.add_obstacle(create_box("ground", np.array([0.0, 0.0, -0.01]), np.array([2.0, 2.0, 0.02])))
+        # Add default obstacles - ground lower to avoid robot base collision
+        self.planner.add_obstacle(create_box("ground", np.array([0.0, 0.0, -0.05]), np.array([2.0, 2.0, 0.02])))
+        self.planner.add_obstacle(create_box("table", np.array([0.6, 0.0, 0.3]), np.array([0.4, 0.6, 0.02])))
 
         print("OMPL Planner operator initialized")
         print(f"  Obstacles: {len(self.planner.collision_checker.environment_objects)}")

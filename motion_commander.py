@@ -82,8 +82,8 @@ class MotionCommander:
                 "object": {
                     "name": "box_obstacle",
                     "type": "box",
-                    "position": [0.5, 0.0, 0.3],
-                    "dimensions": [0.1, 0.3, 0.2],
+                    "position": [0.4, 0.3, 0.5],
+                    "dimensions": [0.08, 0.08, 0.15],
                     "color": [1.0, 0.3, 0.3, 1.0]
                 }
             }
