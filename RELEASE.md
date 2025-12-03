@@ -1,5 +1,21 @@
 # Release Notes
 
+## v0.2.13
+
+### Bug Fixes
+
+#### 1. MuJoCo Joint Array Shape Mismatch (9 vs 7 joints)
+MuJoCo simulator sends 9 joint values (7 arm + 2 gripper fingers), but planner expects 7:
+- `motion_commander.py`: Truncate joint positions to first 7 arm joints before planning
+- `trajectory_executor.py`: Truncate joint positions to first 7 arm joints for interpolation
+
+#### 2. Repeated Obstacle Additions on Scene Sync
+Scene updates were being processed redundantly on every tick:
+- `planner_ompl_with_collision_op.py`: Track scene version to skip already-processed updates
+- `collision_check_op.py`: Track scene version to skip already-processed updates
+
+---
+
 ## v0.2.12
 
 ### Bug Fixes

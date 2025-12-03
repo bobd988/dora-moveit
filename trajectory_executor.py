@@ -42,8 +42,9 @@ class TrajectoryExecutor:
             print(f"[Executor] New trajectory with {len(trajectory)} waypoints")
         
     def update_current_joints(self, joints: np.ndarray):
-        """Update current joint positions from robot"""
-        self.current_joints = joints.copy()
+        """Update current joint positions from robot (only first 7 arm joints)"""
+        # MuJoCo sends 9 values (7 arm + 2 gripper), we only need the 7 arm joints
+        self.current_joints = joints[:self.num_joints].copy()
         
     def step(self) -> Optional[np.ndarray]:
         """

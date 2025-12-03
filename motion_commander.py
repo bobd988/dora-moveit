@@ -46,8 +46,9 @@ class MotionCommander:
         print("Will execute pick-and-place demo sequence")
         
     def update_joints(self, joints: np.ndarray):
-        """Update current joint state"""
-        self.current_joints = joints.copy()
+        """Update current joint state (only first 7 arm joints, ignore gripper)"""
+        # MuJoCo sends 9 values (7 arm + 2 gripper), we only need the 7 arm joints
+        self.current_joints = joints[:7].copy()
         
     def get_next_command(self, node: Node) -> bool:
         """

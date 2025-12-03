@@ -468,15 +468,16 @@ class PlannerOperator:
     """
     Dora operator for OMPL motion planning.
     """
-    
+
     def __init__(self):
         self.planner = OMPLPlanner(num_joints=7)
         self.plan_count = 0
-        
+        self.last_scene_version = -1  # Track scene version to avoid redundant updates
+
         # Add default obstacles
         self.planner.add_obstacle(create_box("table", np.array([0.5, 0.0, 0.4]), np.array([0.6, 0.8, 0.02])))
         self.planner.add_obstacle(create_box("ground", np.array([0.0, 0.0, -0.01]), np.array([2.0, 2.0, 0.02])))
-        
+
         print("OMPL Planner operator initialized")
         print(f"  Obstacles: {len(self.planner.collision_checker.environment_objects)}")
         
@@ -538,6 +539,12 @@ class PlannerOperator:
         """
         # Check if this is a full scene broadcast from planning_scene_op
         if "world_objects" in update_data:
+            # Check scene version to avoid redundant updates
+            scene_version = update_data.get("version", 0)
+            if scene_version <= self.last_scene_version:
+                return  # Already processed this version
+            self.last_scene_version = scene_version
+
             # Full scene sync - clear and rebuild
             self.planner.clear_obstacles()
             for obj_data in update_data.get("world_objects", []):

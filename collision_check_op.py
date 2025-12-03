@@ -140,18 +140,19 @@ class SimpleFK:
 class CollisionCheckOperator:
     """
     Dora operator for collision checking.
-    
+
     Maintains collision checking state and responds to collision queries.
     """
-    
+
     def __init__(self):
         self.checker = CollisionChecker()
         self.fk = SimpleFK()
         self.check_count = 0
-        
+        self.last_scene_version = -1  # Track scene version to avoid redundant updates
+
         # Initialize robot links
         self._setup_robot_collision_model()
-        
+
         print("Collision check operator initialized")
         print(f"  Robot links: {len(self.checker.robot_links)}")
         print(f"  Environment objects: {len(self.checker.environment_objects)}")
@@ -276,6 +277,12 @@ class CollisionCheckOperator:
         """
         # Check if this is a full scene broadcast from planning_scene_op
         if "world_objects" in update_data:
+            # Check scene version to avoid redundant updates
+            scene_version = update_data.get("version", 0)
+            if scene_version <= self.last_scene_version:
+                return  # Already processed this version
+            self.last_scene_version = scene_version
+
             # Full scene sync - clear and rebuild
             self.clear_environment()
             for obj_data in update_data.get("world_objects", []):
