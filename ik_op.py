@@ -181,13 +181,16 @@ class NumericalIKSolver:
             q = np.zeros(self.num_joints)
         
         for iteration in range(self.max_iterations):
+            # Ensure q is 1D with correct size
+            q = np.asarray(q).flatten()[:self.num_joints]
+
             # Forward kinematics
             current_pos, current_rot = self.forward_kinematics(q)
-            
+
             # Position error
             pos_error = target_pos - current_pos
             error_norm = np.linalg.norm(pos_error)
-            
+
             # Check convergence
             if error_norm < self.position_tolerance:
                 return IKResult(
@@ -197,18 +200,19 @@ class NumericalIKSolver:
                     iterations=iteration + 1,
                     message="IK converged successfully"
                 )
-            
+
             # Compute Jacobian
-            J = self.compute_jacobian(q)[:3, :]  # Position only
-            
+            J = self.compute_jacobian(q)[:3, :]  # Position only (3x7)
+
             # Damped least squares (Levenberg-Marquardt)
             damping = 0.01
-            J_pinv = J.T @ np.linalg.inv(J @ J.T + damping * np.eye(3))
-            
+            JJT = J @ J.T
+            J_pinv = J.T @ np.linalg.inv(JJT + damping * np.eye(3))
+
             # Update joints
-            dq = self.step_size * J_pinv @ pos_error
-            q = q + dq
-            
+            dq = J_pinv @ pos_error
+            q = q + self.step_size * dq
+
             # Apply joint limits
             q = np.clip(q, self.joint_limits_lower, self.joint_limits_upper)
         

@@ -32,11 +32,11 @@ class MultiViewCaptureNode:
     """Multi-view capture workflow controller"""
 
     def __init__(self):
-        # Capture targets (3 viewpoints) - you can adjust these for real scene
+        # Capture targets (3 viewpoints) - larger movements for visibility
         self.targets = [
-            CaptureTarget("view1", np.array([0.4, 0.2, 0.5, 3.14, 0.0, 0.0])),
-            CaptureTarget("view2", np.array([0.4, -0.2, 0.5, 3.14, 0.0, 1.57])),
-            CaptureTarget("view3", np.array([0.3, 0.0, 0.6, 3.14, 0.0, 3.14])),
+            CaptureTarget("view1", np.array([0.3, 0.3, 0.4, 3.14, 0.0, 0.0])),
+            CaptureTarget("view2", np.array([0.5, -0.3, 0.6, 3.14, 0.0, 1.57])),
+            CaptureTarget("view3", np.array([-0.3, 0.0, 0.3, 3.14, 0.0, 3.14])),
         ]
 
         self.current_target_idx = 0
@@ -233,11 +233,7 @@ class MultiViewCaptureNode:
             return
 
         target = self.targets[self.current_target_idx]
-        print("\nMoving to", target.name)
-        self._request_ik(node, target.position)
-
-        target = self.targets[self.current_target_idx]
-        print("\nMoving to", target.name)
+        print(f"\n[Target {self.current_target_idx + 1}/{len(self.targets)}] Moving to {target.name}")
         self._request_ik(node, target.position)
 
     def _request_ik(self, node: Node, pose: np.ndarray):

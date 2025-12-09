@@ -25,7 +25,7 @@ class TrajectoryExecutor:
         self.current_joints: Optional[np.ndarray] = None
         self.target_joints: Optional[np.ndarray] = None
         self.interpolation_progress = 0.0
-        self.interpolation_speed = 0.1  # Progress per tick
+        self.interpolation_speed = 0.02  # Progress per tick (slower for visibility)
         self.is_executing = False
         self.execution_count = 0
         

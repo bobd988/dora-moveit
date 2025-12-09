@@ -405,7 +405,16 @@ class OMPLPlanner:
                         # Combine paths
                         path = path_a + list(reversed(path_b))[1:]
                         path = self.smooth_path(path)
-                        
+
+                        # Interpolate for smoother visualization
+                        interpolated = []
+                        for i in range(len(path) - 1):
+                            interpolated.append(path[i])
+                            for t in np.linspace(0.1, 0.9, 10):
+                                interpolated.append(path[i] + t * (path[i+1] - path[i]))
+                        interpolated.append(path[-1])
+                        path = interpolated
+
                         # Compute path length
                         path_length = sum(np.linalg.norm(path[i+1] - path[i]) for i in range(len(path)-1))
                         
