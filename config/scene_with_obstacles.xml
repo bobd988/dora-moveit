@@ -1,0 +1,44 @@
+<mujoco model="GEN72_Scene">
+  <compiler angle="radian" meshdir="GEN72/urdf/gen_72_b_description/meshes" />
+
+  <option gravity="0 0 -9.81" timestep="0.001" />
+
+  <visual>
+    <headlight ambient="0.5 0.5 0.5" diffuse="0.8 0.8 0.8" specular="0.3 0.3 0.3" />
+  </visual>
+
+  <asset>
+    <texture name="grid" type="2d" builtin="checker" width="512" height="512" rgb1="0.2 0.3 0.4" rgb2="0.3 0.4 0.5" />
+    <material name="grid" texture="grid" texrepeat="10 10" reflectance="0.1" />
+  </asset>
+
+  <include file="GEN72/urdf/gen_72_b_description/meshes/GEN72.urdf" />
+
+  <worldbody>
+    <light pos="0 0 3" dir="0 0 -1" diffuse="0.8 0.8 0.8" specular="0.3 0.3 0.3" />
+    <light pos="2 2 3" dir="-1 -1 -1" diffuse="0.5 0.5 0.5" />
+
+    <geom name="floor" type="plane" size="3 3 0.1" material="grid" />
+
+    <!-- Pipe obstacles: 30cm diameter (0.15m radius), 2m length -->
+    <body name="pipe1" pos="0.4 0.5 1.0">
+      <geom name="pipe1_geom" type="cylinder" size="0.15 1.0" rgba="0.8 0.3 0.3 1" />
+    </body>
+    <body name="pipe2" pos="0.6 -0.4 0.8">
+      <geom name="pipe2_geom" type="cylinder" size="0.15 1.0" rgba="0.3 0.8 0.3 1" />
+    </body>
+    <body name="pipe3" pos="-0.3 0.3 0.6">
+      <geom name="pipe3_geom" type="cylinder" size="0.15 1.0" rgba="0.3 0.3 0.8 1" />
+    </body>
+  </worldbody>
+
+  <actuator>
+    <position name="actuator_joint1" joint="joint1" kp="100" ctrlrange="-3.0014 3.0014" />
+    <position name="actuator_joint2" joint="joint2" kp="100" ctrlrange="-1.8323 1.8323" />
+    <position name="actuator_joint3" joint="joint3" kp="100" ctrlrange="-3.0014 3.0014" />
+    <position name="actuator_joint4" joint="joint4" kp="100" ctrlrange="-2.8792 0.9597" />
+    <position name="actuator_joint5" joint="joint5" kp="50" ctrlrange="-3.0014 3.0014" />
+    <position name="actuator_joint6" joint="joint6" kp="50" ctrlrange="-1.707 1.783" />
+    <position name="actuator_joint7" joint="joint7" kp="50" ctrlrange="-3.0014 3.0014" />
+  </actuator>
+</mujoco>

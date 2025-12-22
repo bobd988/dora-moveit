@@ -1,0 +1,96 @@
+<mujoco model="GEN72">
+  <compiler angle="radian" meshdir="../GEN72/urdf/gen_72_b_description/meshes"/>
+
+  <option gravity="0 0 -9.81" timestep="0.001"/>
+
+  <visual>
+    <headlight ambient="0.5 0.5 0.5" diffuse="0.8 0.8 0.8" specular="0.3 0.3 0.3"/>
+    <scale framewidth="0.01" framelength="0.3"/>
+  </visual>
+
+  <asset>
+    <texture name="grid" type="2d" builtin="checker" width="512" height="512" rgb1="0.2 0.3 0.4" rgb2="0.3 0.4 0.5"/>
+    <material name="grid" texture="grid" texrepeat="10 10" reflectance="0.1"/>
+    <mesh name="base_link" content_type="model/stl" file="base_link.STL"/>
+    <mesh name="Link1" content_type="model/stl" file="Link1.STL"/>
+    <mesh name="Link2" content_type="model/stl" file="Link2.STL"/>
+    <mesh name="Link3" content_type="model/stl" file="Link3.STL"/>
+    <mesh name="Link4" content_type="model/stl" file="Link4.STL"/>
+    <mesh name="Link5" content_type="model/stl" file="Link5.STL"/>
+    <mesh name="Link6" content_type="model/stl" file="Link6.STL"/>
+    <mesh name="Link7" content_type="model/stl" file="Link7.STL"/>
+  </asset>
+
+  <worldbody>
+    <light pos="0 0 3" dir="0 0 -1" diffuse="0.8 0.8 0.8" specular="0.3 0.3 0.3"/>
+    <light pos="2 2 3" dir="-1 -1 -1" diffuse="0.5 0.5 0.5"/>
+    <geom name="floor" type="plane" size="3 3 0.1" material="grid"/>
+
+    <!-- World coordinate frame -->
+    <body name="world_frame" pos="0 0 0">
+      <geom type="cylinder" size="0.005 0.15" pos="0.15 0 0" quat="0.707107 0 0.707107 0" rgba="1 0 0 1"/>
+      <geom type="cylinder" size="0.005 0.15" pos="0 0.15 0" quat="0.707107 -0.707107 0 0" rgba="0 1 0 1"/>
+      <geom type="cylinder" size="0.005 0.15" pos="0 0 0.15" rgba="0 0 1 1"/>
+    </body>
+
+    <!-- Pipe obstacles: 30cm diameter (0.15m radius), 2m length 
+    <body name="pipe1" pos="0.1 0.3 1.0">
+      <geom name="pipe1_geom" type="cylinder" size="0.05 1.0" rgba="0.8 0.3 0.3 1"/>
+    </body>
+    <body name="pipe2" pos="0.6 -0.4 0.8" quat="0.707107 0 0.707107 0">
+      <geom name="pipe2_geom" type="cylinder" size="0.05 1.0" rgba="0.3 0.8 0.3 1"/>
+    </body>
+    <body name="pipe3" pos="-0.3 0.3 0.6">
+      <geom name="pipe3_geom" type="cylinder" size="0.05 1.0" rgba="0.3 0.3 0.8 1"/>
+    </body>
+    -->
+
+    <!-- Robot -->
+    <geom type="mesh" rgba="1 1 1 1" mesh="base_link"/>
+    <body name="Link1" pos="0 0 0.218">
+      <inertial pos="3.54242e-07 -6.04073e-05 -0.0474562" quat="0.707095 0.00082527 -0.000815443 0.707117" mass="0.511232" diaginertia="0.0010204 0.000959441 0.000388711"/>
+      <joint name="joint1" pos="0 0 0" axis="0 0 1" range="-3.0014 3.0014" actuatorfrcrange="-25 25"/>
+      <geom type="mesh" rgba="1 1 1 1" mesh="Link1"/>
+      <body name="Link2" quat="0.707105 -0.707108 0 0">
+        <inertial pos="-7.09648e-07 -0.0576246 -3.8844e-05" quat="0.707724 0.706489 -3.66761e-05 2.79347e-05" mass="0.551907" diaginertia="0.0014214 0.00127235 0.000525712"/>
+        <joint name="joint2" pos="0 0 0" axis="0 0 1" range="-1.8323 1.8323" actuatorfrcrange="-25 25"/>
+        <geom type="mesh" rgba="1 1 1 1" mesh="Link2"/>
+        <body name="Link3" pos="0 -0.28 0" quat="0.707105 0.707108 0 0">
+          <inertial pos="0.00897441 2.62634e-05 -0.0738285" quat="0.989785 -0.000620494 0.142566 -0.00106265" mass="0.77413" diaginertia="0.00256503 0.00248694 0.000756989"/>
+          <joint name="joint3" pos="0 0 0" axis="0 0 1" range="-3.0014 3.0014" actuatorfrcrange="-25 25"/>
+          <geom type="mesh" rgba="1 1 1 1" mesh="Link3"/>
+          <body name="Link4" pos="0.04 0 0" quat="0.707105 0.707108 0 0">
+            <inertial pos="-0.00962439 0.0352034 0.000174576" quat="0.439439 0.552618 -0.438956 0.55572" mass="0.43713" diaginertia="0.000952335 0.000901816 0.00023284"/>
+            <joint name="joint4" pos="0 0 0" axis="0 0 1" range="-2.8792 0.9597" actuatorfrcrange="-25 25"/>
+            <geom type="mesh" rgba="1 1 1 1" mesh="Link4"/>
+            <body name="Link5" pos="-0.019 0.2525 0" quat="0.707105 -0.707108 0 0">
+              <inertial pos="-4.77957e-07 -3.84738e-05 -0.0669555" quat="1 0.000543145 1.00595e-05 4.16479e-05" mass="0.424277" diaginertia="0.00112445 0.00103382 0.000274639"/>
+              <joint name="joint5" pos="0 0 0" axis="0 0 1" range="-3.0014 3.0014" actuatorfrcrange="-5 5"/>
+              <geom type="mesh" rgba="1 1 1 1" mesh="Link5"/>
+              <body name="Link6" quat="0.707105 0.707108 0 0">
+                <inertial pos="0.00184222 0.0379763 -9.21091e-05" quat="0.576988 0.408739 -0.576994 0.408774" mass="0.302793" diaginertia="0.000155721 0.00014117 0.000131576"/>
+                <joint name="joint6" pos="0 0 0" axis="0 0 1" range="-1.707 1.783" actuatorfrcrange="-5 5"/>
+                <geom type="mesh" rgba="1 1 1 1" mesh="Link6"/>
+                <body name="Link7" pos="0.0905 0.067 0" quat="0.499998 0.5 0.500002 0.5">
+                  <inertial pos="0.000199885 -4.25082e-08 -0.0292499" quat="0.081641 0.702378 -0.081641 0.702378" mass="0.176613" diaginertia="8.48643e-05 6.24292e-05 6.24281e-05"/>
+                  <joint name="joint7" pos="0 0 0" axis="0 0 1" range="-3.0014 3.0014" actuatorfrcrange="-5 5"/>
+                  <geom type="mesh" rgba="1 1 1 1" mesh="Link7"/>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <position name="actuator_joint1" joint="joint1" kp="100" ctrlrange="-3.0014 3.0014"/>
+    <position name="actuator_joint2" joint="joint2" kp="100" ctrlrange="-1.8323 1.8323"/>
+    <position name="actuator_joint3" joint="joint3" kp="100" ctrlrange="-3.0014 3.0014"/>
+    <position name="actuator_joint4" joint="joint4" kp="100" ctrlrange="-2.8792 0.9597"/>
+    <position name="actuator_joint5" joint="joint5" kp="50" ctrlrange="-3.0014 3.0014"/>
+    <position name="actuator_joint6" joint="joint6" kp="50" ctrlrange="-1.707 1.783"/>
+    <position name="actuator_joint7" joint="joint7" kp="50" ctrlrange="-3.0014 3.0014"/>
+  </actuator>
+</mujoco>

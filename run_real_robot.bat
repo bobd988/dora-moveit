@@ -17,6 +17,8 @@ start /B cmd /c "dora up"
 echo Waiting for daemon...
 timeout /t 5 /nobreak >nul
 
+cd config
+
 echo Building dataflow...
 dora build dataflow_gen72_real.yml
 
