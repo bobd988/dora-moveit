@@ -1,7 +1,7 @@
 # GEN72 Multi-View Capture System
 
 A complete robotic arm control system for industrial pipeline inspection using the GEN72 7-DOF robotic arm. Built on Dora-rs dataflow architecture with MuJoCo simulation and real robot support.
-
+Project Effect Showcase：https://raw.githubusercontent.com/bobd988/dora-moveit/main/ArmWithCar.gif
 ## Overview
 
 This system enables automated multi-viewpoint photography for pipeline inspection tasks. The robot arm moves to predefined viewpoints, captures images, and returns to home position - all with collision-free motion planning.
