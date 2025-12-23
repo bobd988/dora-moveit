@@ -1,0 +1,25 @@
+nodes:
+  - id: mujoco_sim
+    path: dora-mujoco
+    inputs:
+      tick: dora/timer/millis/100
+      wheel_control: vehicle_controller/wheel_commands
+    outputs:
+      - joint_positions
+      - joint_velocities
+    env:
+      MODEL_NAME: "F:/2-DORA/2-arm/dora-moveit/dora-moveit/config/hunter_se_with_arm_and_pipes.xml"
+
+  - id: vehicle_controller
+    path: test_vehicle_controller_debug.py
+    inputs:
+      joint_positions: mujoco_sim/joint_positions
+    outputs:
+      - wheel_commands
+      - movement_complete
+
+  - id: monitor
+    path: test_vehicle_monitor.py
+    inputs:
+      joint_positions: mujoco_sim/joint_positions
+      movement_complete: vehicle_controller/movement_complete

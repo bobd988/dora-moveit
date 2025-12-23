@@ -1,0 +1,106 @@
+# Hunter SE with GEN72 Arm - MuJoCo Simulation
+# ==========================================================
+# 小车+机械臂组合仿真
+#
+# 运行方法：
+#   dora start dataflow_hunter_arm_mujoco.yml
+
+nodes:
+  # ===========================================
+  # MuJoCo 仿真（Hunter SE + GEN72 机器人）
+  # ===========================================
+  - id: mujoco_sim
+    path: dora-mujoco
+    inputs:
+      tick: dora/timer/millis/10         # 100 Hz 仿真
+      wheel_control: vehicle_controller/wheel_commands
+      control_input: trajectory_executor/joint_commands
+    outputs:
+      - joint_positions                  # 当前关节角
+      - joint_velocities
+      - sensor_data
+    env:
+      MODEL_NAME: "F:/2-DORA/2-arm/dora-moveit/dora-moveit/config/hunter_se_with_arm_and_pipes.xml"
+      MUJOCO_GL: "glfw"
+
+  # ===========================================
+  # 小车控制器
+  # ===========================================
+  - id: vehicle_controller
+    path: ../workflow/vehicle_controller.py
+    inputs:
+      joint_positions: mujoco_sim/joint_positions
+    outputs:
+      - wheel_commands
+      - movement_complete
+
+  # ===========================================
+  # Planning Scene 管理器
+  # ===========================================
+  - id: planning_scene
+    path: ../motion_planner/planning_scene_op.py
+    inputs:
+      robot_state: mujoco_sim/joint_positions
+      scene_command: capture/scene_command
+      tick: dora/timer/millis/5000
+    outputs:
+      - scene_update
+      - command_result
+
+  # ===========================================
+  # OMPL Motion Planner
+  # ===========================================
+  - id: planner
+    path: ../motion_planner/planner_ompl_with_collision_op.py
+    inputs:
+      plan_request: capture/plan_request
+      scene_update: planning_scene/scene_update
+    outputs:
+      - trajectory
+      - plan_status
+
+  # ===========================================
+  # IK Solver
+  # ===========================================
+  - id: ik_solver
+    path: ../ik_solver/ik_op.py
+    inputs:
+      ik_request: capture/ik_request
+    outputs:
+      - ik_solution
+      - ik_status
+
+  # ===========================================
+  # 轨迹执行器
+  # ===========================================
+  - id: trajectory_executor
+    path: ../trajectory_execution/trajectory_executor.py
+    inputs:
+      trajectory: planner/trajectory
+      joint_positions: mujoco_sim/joint_positions
+      tick: dora/timer/millis/50
+    outputs:
+      - joint_commands
+      - execution_status
+
+  # ===========================================
+  # GEN72 多视角拍照控制器
+  # ===========================================
+  - id: capture
+    path: ../workflow/multi_view_capture_node.py
+    env:
+      capture_output_dir: "../result_captures"
+
+    inputs:
+      joint_positions: mujoco_sim/joint_positions
+      execution_status: trajectory_executor/execution_status
+      trajectory: planner/trajectory
+      plan_status: planner/plan_status
+      ik_solution: ik_solver/ik_solution
+      ik_status: ik_solver/ik_status
+      vehicle_ready: vehicle_controller/movement_complete
+    outputs:
+      - robot_state
+      - plan_request
+      - ik_request
+      - scene_command

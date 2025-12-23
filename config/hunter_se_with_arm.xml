@@ -1,0 +1,133 @@
+<mujoco model="hunter_se_with_gen72">
+  <compiler angle="radian"/>
+
+  <option gravity="0 0 -9.81" timestep="0.001"/>
+
+  <visual>
+    <headlight ambient="0.5 0.5 0.5" diffuse="0.8 0.8 0.8" specular="0.3 0.3 0.3"/>
+    <scale framewidth="0.01" framelength="0.3"/>
+  </visual>
+
+  <asset>
+    <texture name="grid" type="2d" builtin="checker" width="512" height="512" rgb1="0.2 0.3 0.4" rgb2="0.3 0.4 0.5"/>
+    <material name="grid" texture="grid" texrepeat="10 10" reflectance="0.1"/>
+
+    <!-- Hunter SE meshes -->
+    <mesh name="hunter_base" file="../hunter_se/hunter_se_description/meshes/base_link.STL"/>
+    <mesh name="hunter_fr_left" file="../hunter_se/hunter_se_description/meshes/fr_left_link.STL"/>
+    <mesh name="hunter_fr_right" file="../hunter_se/hunter_se_description/meshes/fr_right_link.STL"/>
+    <mesh name="hunter_re_left" file="../hunter_se/hunter_se_description/meshes/re_left_link.STL"/>
+    <mesh name="hunter_re_right" file="../hunter_se/hunter_se_description/meshes/re_right_link.STL"/>
+
+    <!-- GEN72 arm meshes -->
+    <mesh name="base_link" file="../GEN72/urdf/gen_72_b_description/meshes/base_link.STL"/>
+    <mesh name="Link1" file="../GEN72/urdf/gen_72_b_description/meshes/Link1.STL"/>
+    <mesh name="Link2" file="../GEN72/urdf/gen_72_b_description/meshes/Link2.STL"/>
+    <mesh name="Link3" file="../GEN72/urdf/gen_72_b_description/meshes/Link3.STL"/>
+    <mesh name="Link4" file="../GEN72/urdf/gen_72_b_description/meshes/Link4.STL"/>
+    <mesh name="Link5" file="../GEN72/urdf/gen_72_b_description/meshes/Link5.STL"/>
+    <mesh name="Link6" file="../GEN72/urdf/gen_72_b_description/meshes/Link6.STL"/>
+    <mesh name="Link7" file="../GEN72/urdf/gen_72_b_description/meshes/Link7.STL"/>
+  </asset>
+
+  <worldbody>
+    <light pos="0 0 3" dir="0 0 -1" diffuse="0.8 0.8 0.8" specular="0.3 0.3 0.3"/>
+    <light pos="2 2 3" dir="-1 -1 -1" diffuse="0.5 0.5 0.5"/>
+    <geom name="floor" type="plane" size="3 3 0.1" material="grid"/>
+
+    <!-- Hunter SE Mobile Base -->
+    <body name="hunter_base" pos="0 0 0.28">
+      <inertial pos="0.037 0 -0.077" mass="24.73" diaginertia="0.313606 0.219145 0.123216"/>
+      <geom type="mesh" rgba="0.75 0.75 0.75 1" mesh="hunter_base"/>
+
+      <!-- Front Left Wheel -->
+      <body name="fr_steer_left" pos="0.34058 0.24619 -0.1535">
+        <inertial pos="0 0.0164 0" mass="3.149" diaginertia="0.0378075 0.0222 0.0222"/>
+        <joint name="fr_steer_left_joint" type="hinge" axis="0 0 1" range="-0.69 0.69" damping="10"/>
+        <body name="fr_left" quat="0.707107 0.707107 0 0">
+          <joint name="fr_left_joint" type="hinge" axis="0 0 -1" damping="5" frictionloss="15"/>
+          <inertial pos="0 0 -0.0164" mass="3.149" diaginertia="0.0378075 0.0222 0.0222"/>
+          <geom type="mesh" rgba="0.22 0.22 0.22 1" mesh="hunter_fr_left"/>
+        </body>
+      </body>
+
+      <!-- Front Right Wheel -->
+      <body name="fr_steer_right" pos="0.34219 -0.24619 -0.1535">
+        <inertial pos="0 -0.0164 0" mass="3.149" diaginertia="0.0378075 0.0222 0.0222"/>
+        <joint name="fr_steer_right_joint" type="hinge" axis="0 0 1" range="-0.69 0.69" damping="10"/>
+        <body name="fr_right" quat="0.707107 -0.707107 0 0">
+          <joint name="fr_right_joint" type="hinge" axis="0 0 1" damping="5" frictionloss="15"/>
+          <inertial pos="0 0 -0.0164" mass="3.149" diaginertia="0.0378075 0.0222 0.0222"/>
+          <geom type="mesh" rgba="0.22 0.22 0.22 1" mesh="hunter_fr_right"/>
+        </body>
+      </body>
+
+      <!-- Rear Left Wheel -->
+      <body name="re_left" pos="-0.2078 0.252 -0.158" quat="0.707107 0.707107 0 0">
+        <joint name="re_left_joint" type="hinge" axis="0 0 -1" damping="5" frictionloss="15"/>
+        <inertial pos="0 0 -0.0103" mass="3.149" diaginertia="0.0378075 0.0222 0.0222"/>
+        <geom type="mesh" rgba="0.376 0.376 0.376 1" mesh="hunter_re_left"/>
+      </body>
+
+      <!-- Rear Right Wheel -->
+      <body name="re_right" pos="-0.2078 -0.252 -0.158" quat="0.707107 -0.707107 0 0">
+        <joint name="re_right_joint" type="hinge" axis="0 0 1" damping="5" frictionloss="15"/>
+        <inertial pos="0 0 -0.0103" mass="3.149" diaginertia="0.0378075 0.0222 0.0222"/>
+        <geom type="mesh" rgba="1 1 1 1" mesh="hunter_re_right"/>
+      </body>
+
+      <!-- GEN72 Arm mounted on top center of the base -->
+      <body name="arm_base" pos="0 0 0">
+        <inertial pos="0 0 0.015" mass="0.6" diaginertia="0.003 0.003 0.003"/>
+        <geom type="box" size="0.1 0.1 0.015" rgba="0.3 0.3 0.3 1" pos="0 0 0.015"/>
+        <geom type="mesh" rgba="1 1 1 1" mesh="base_link" pos="0 0 0.03"/>
+        <body name="Link1" pos="0 0 0.248">
+          <inertial pos="3.54242e-07 -6.04073e-05 -0.0474562" quat="0.707095 0.00082527 -0.000815443 0.707117" mass="0.511232" diaginertia="0.0010204 0.000959441 0.000388711"/>
+          <joint name="joint1" pos="0 0 0" axis="0 0 1" range="-3.0014 3.0014" actuatorfrcrange="-25 25" damping="10"/>
+          <geom type="mesh" rgba="1 1 1 1" mesh="Link1"/>
+          <body name="Link2" quat="0.707105 -0.707108 0 0">
+            <inertial pos="-7.09648e-07 -0.0576246 -3.8844e-05" quat="0.707724 0.706489 -3.66761e-05 2.79347e-05" mass="0.551907" diaginertia="0.0014214 0.00127235 0.000525712"/>
+            <joint name="joint2" pos="0 0 0" axis="0 0 1" range="-1.8323 1.8323" actuatorfrcrange="-25 25" damping="10"/>
+            <geom type="mesh" rgba="1 1 1 1" mesh="Link2"/>
+            <body name="Link3" pos="0 -0.28 0" quat="0.707105 0.707108 0 0">
+              <inertial pos="0.00897441 2.62634e-05 -0.0738285" quat="0.989785 -0.000620494 0.142566 -0.00106265" mass="0.77413" diaginertia="0.00256503 0.00248694 0.000756989"/>
+              <joint name="joint3" pos="0 0 0" axis="0 0 1" range="-3.0014 3.0014" actuatorfrcrange="-25 25" damping="10"/>
+              <geom type="mesh" rgba="1 1 1 1" mesh="Link3"/>
+              <body name="Link4" pos="0.04 0 0" quat="0.707105 0.707108 0 0">
+                <inertial pos="-0.00962439 0.0352034 0.000174576" quat="0.439439 0.552618 -0.438956 0.55572" mass="0.43713" diaginertia="0.000952335 0.000901816 0.00023284"/>
+                <joint name="joint4" pos="0 0 0" axis="0 0 1" range="-2.8792 0.9597" actuatorfrcrange="-25 25" damping="10"/>
+                <geom type="mesh" rgba="1 1 1 1" mesh="Link4"/>
+                <body name="Link5" pos="-0.019 0.2525 0" quat="0.707105 -0.707108 0 0">
+                  <inertial pos="-4.77957e-07 -3.84738e-05 -0.0669555" quat="1 0.000543145 1.00595e-05 4.16479e-05" mass="0.424277" diaginertia="0.00112445 0.00103382 0.000274639"/>
+                  <joint name="joint5" pos="0 0 0" axis="0 0 1" range="-3.0014 3.0014" actuatorfrcrange="-5 5" damping="5"/>
+                  <geom type="mesh" rgba="1 1 1 1" mesh="Link5"/>
+                  <body name="Link6" quat="0.707105 0.707108 0 0">
+                    <inertial pos="0.00184222 0.0379763 -9.21091e-05" quat="0.576988 0.408739 -0.576994 0.408774" mass="0.302793" diaginertia="0.000155721 0.00014117 0.000131576"/>
+                    <joint name="joint6" pos="0 0 0" axis="0 0 1" range="-1.707 1.783" actuatorfrcrange="-5 5" damping="5"/>
+                    <geom type="mesh" rgba="1 1 1 1" mesh="Link6"/>
+                    <body name="Link7" pos="0.0905 0.067 0" quat="0.499998 0.5 0.500002 0.5">
+                      <inertial pos="0.000199885 -4.25082e-08 -0.0292499" quat="0.081641 0.702378 -0.081641 0.702378" mass="0.176613" diaginertia="8.48643e-05 6.24292e-05 6.24281e-05"/>
+                      <joint name="joint7" pos="0 0 0" axis="0 0 1" range="-3.0014 3.0014" actuatorfrcrange="-5 5" damping="5"/>
+                      <geom type="mesh" rgba="1 1 1 1" mesh="Link7"/>
+                    </body>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <!-- Arm actuators -->
+    <position name="actuator_joint1" joint="joint1" kp="100" ctrlrange="-3.0014 3.0014"/>
+    <position name="actuator_joint2" joint="joint2" kp="100" ctrlrange="-1.8323 1.8323"/>
+    <position name="actuator_joint3" joint="joint3" kp="100" ctrlrange="-3.0014 3.0014"/>
+    <position name="actuator_joint4" joint="joint4" kp="100" ctrlrange="-2.8792 0.9597"/>
+    <position name="actuator_joint5" joint="joint5" kp="50" ctrlrange="-3.0014 3.0014"/>
+    <position name="actuator_joint6" joint="joint6" kp="50" ctrlrange="-1.707 1.783"/>
+    <position name="actuator_joint7" joint="joint7" kp="50" ctrlrange="-3.0014 3.0014"/>
+  </actuator>
+</mujoco>

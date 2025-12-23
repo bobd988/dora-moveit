@@ -492,34 +492,36 @@ class CollisionChecker:
         return CollisionResult(in_collision=False)
     
     def is_state_valid(
-        self, 
+        self,
         link_transforms: Dict[str, np.ndarray],
         check_self: bool = True,
         check_environment: bool = True
     ) -> Tuple[bool, Optional[CollisionResult]]:
         """
         Check if a robot state is valid (collision-free).
-        
+
         This is the main function used by motion planners.
-        
+
         Args:
             link_transforms: Dictionary mapping link names to their current poses
             check_self: Whether to check self-collision
             check_environment: Whether to check environment collision
-            
+
         Returns:
             Tuple of (is_valid, collision_result if invalid else None)
         """
         if check_self:
             result = self.check_robot_self_collision(link_transforms)
             if result.in_collision:
+                print(f"[Collision] Self-collision detected: {result.link1} <-> {result.link2}")
                 return False, result
-        
+
         if check_environment:
             result = self.check_robot_environment_collision(link_transforms)
             if result.in_collision:
+                print(f"[Collision] Environment collision: {result.link1} <-> {result.object_name}, penetration={result.penetration_depth:.4f}m")
                 return False, result
-        
+
         return True, None
     
     def get_minimum_distance(

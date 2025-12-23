@@ -1,0 +1,18 @@
+nodes:
+  - id: mujoco_sim
+    path: dora-mujoco
+    inputs:
+      tick: dora/timer/millis/100
+    outputs:
+      - joint_positions
+      - joint_velocities
+      - sensor_data
+    env:
+      MODEL_NAME: "F:/2-DORA/2-arm/dora-moveit/dora-moveit/config/hunter_se_with_arm_and_pipes.xml"
+
+  - id: monitor
+    path: test_mujoco_monitor.py
+    inputs:
+      joint_positions: mujoco_sim/joint_positions
+      joint_velocities: mujoco_sim/joint_velocities
+      sensor_data: mujoco_sim/sensor_data

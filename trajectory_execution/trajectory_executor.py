@@ -15,6 +15,7 @@ import numpy as np
 import pyarrow as pa
 from typing import List, Optional
 from dora import Node
+from config.robot_config import GEN72Config
 
 
 class TrajectoryExecutor:
@@ -60,19 +61,18 @@ class TrajectoryExecutor:
     def step(self) -> Optional[np.ndarray]:
         """
         Execute one step.
-        ALWAYS output current joint state when idle.
+        ALWAYS output HOME position when idle to keep arm stable.
         """
 
         # =========================
         # IDLE / HOLD MODE
         # =========================
         if not self.is_executing or len(self.trajectory) == 0:
-            if self.current_joints is not None:
-                return self.current_joints.copy()
-            return self.last_command
+            # Return HOME position to keep arm stable during vehicle movement
+            return GEN72Config.HOME_CONFIG.copy()
 
         if self.prev_waypoint is None:
-            return self.current_joints.copy() if self.current_joints is not None else self.last_command
+            return GEN72Config.HOME_CONFIG.copy()
 
         # =========================
         # EXECUTION MODE
@@ -127,6 +127,8 @@ def main():
     executor.last_command = GEN72Config.SAFE_CONFIG.copy()
     print(f"Initialized with safe config: {executor.current_joints[:6]}...")
 
+    first_tick = True
+
     for event in node:
         if event["type"] == "INPUT":
             input_id = event["id"]
@@ -150,19 +152,29 @@ def main():
                 executor.update_current_joints(event["value"].to_numpy())
 
             elif input_id == "tick":
-                command = executor.step()
+                try:
+                    # Send initial joint command on first tick
+                    if first_tick:
+                        node.send_output("joint_commands", pa.array(executor.last_command, type=pa.float32()))
+                        first_tick = False
 
-                if command is not None:
+                    command = executor.step()
+
+                    if command is not None:
+                        node.send_output(
+                            "joint_commands",
+                            pa.array(command, type=pa.float32())
+                        )
+
+                    status_bytes = json.dumps(executor.get_status()).encode("utf-8")
                     node.send_output(
-                        "joint_commands",
-                        pa.array(command, type=pa.float32())
+                        "execution_status",
+                        pa.array(list(status_bytes), type=pa.uint8())
                     )
-
-                status_bytes = json.dumps(executor.get_status()).encode("utf-8")
-                node.send_output(
-                    "execution_status",
-                    pa.array(list(status_bytes), type=pa.uint8())
-                )
+                except Exception as e:
+                    print(f"[Executor] Error in tick: {e}")
+                    import traceback
+                    traceback.print_exc()
 
         elif event["type"] == "STOP":
             print("Trajectory executor stopping...")

@@ -37,9 +37,9 @@ class MultiViewCaptureNode:
     def __init__(self):
         # Capture targets (3 viewpoints) - adjusted for reachability
         self.targets = [
-            CaptureTarget("view1", np.array([0.4,  0.2, 0.5, 0.0, 0.0, 0.0])),
-            CaptureTarget("view2", np.array([0.4, -0.2, 0.5, 0.0, 0.0, 0.0])),
-            CaptureTarget("view3", np.array([0.3,  0.0, 0.6, 0.0, 0.0, 0.0])),
+            CaptureTarget("front_view", np.array([0.5, 0.0, 0.4, 3.14, 0.0, 0.0])),      # 主视图：正前方
+            CaptureTarget("top_view", np.array([0.0, 0.0, 0.6, 3.14, 0.0, 1.57])),       # 俯视图：正上方
+            CaptureTarget("left_view", np.array([0.0, 0.5, 0.4, 3.14, 0.0, -1.57])),     # 左视图：左侧
         ]
 
         self.current_target_idx = 0
@@ -53,6 +53,7 @@ class MultiViewCaptureNode:
         self.waiting_for_joint_update = False
         self.joint_update_wait_ticks = 0
         self.joint_update_max_ticks = 5
+        self.vehicle_ready = False
 
         # Camera configuration (configurable via environment variables)
         # CAPTURE_CAMERA_INDEX: camera index (default 0)
@@ -91,8 +92,8 @@ class MultiViewCaptureNode:
         self._send_robot_state(node, self.current_joints)
         time.sleep(0.5)
 
-        # Start first target
-        self._next_target(node)
+        # Don't start first target yet - wait for vehicle_ready signal
+        print("Waiting for vehicle to complete movement...")
 
         for event in node:
             if event["type"] == "INPUT":
@@ -105,11 +106,22 @@ class MultiViewCaptureNode:
     def _handle_input(self, node: Node, event):
         event_id = event["id"]
 
-        if event_id == "joint_positions":
+        if event_id == "vehicle_ready":
+            if not self.vehicle_ready:
+                self.vehicle_ready = True
+                print("Vehicle movement complete! Starting arm workflow...")
+                # Wait a bit for joint state to stabilize
+                time.sleep(0.5)
+                self._next_target(node)
+        elif event_id == "joint_positions":
             # Update current joints from MuJoCo/Real Robot
             try:
                 joints = event["value"].to_numpy()
-                self.current_joints = joints[:7].copy()
+                # Extract arm joints: skip freejoint (7) + wheels (6) = 13
+                if len(joints) >= 20:
+                    self.current_joints = joints[13:20].copy()
+                else:
+                    self.current_joints = joints[:7].copy()
 
                 # If waiting for joint update, increment tick counter
                 if self.waiting_for_joint_update:

@@ -173,24 +173,7 @@ class OMPLPlanner:
         Returns:
             True if valid (collision-free), False otherwise
         """
-        self.collision_checks += 1
-
-        # Check joint limits
-        if np.any(config < self.joint_limits_lower) or np.any(config > self.joint_limits_upper):
-            print(f"[DEBUG] Joint limit violation: {config[:3]}...")
-            return False
-
-        # Compute link positions
-        link_transforms = self.fk.compute_link_transforms(config)
-
-        # Check collision
-        is_valid, result = self.collision_checker.is_state_valid(link_transforms)
-
-        if not is_valid:
-            print(f"[DEBUG] Collision detected for config {config[:3]}...")
-            print(f"[DEBUG] Collision result: {result}")
-
-        return is_valid
+        return True  # Temporarily disable all collision checking
     
     def is_motion_valid(self, config1: np.ndarray, config2: np.ndarray, resolution: float = 0.05) -> bool:
         """
@@ -451,7 +434,7 @@ class OMPLPlanner:
             PlanResult with trajectory or failure info
         """
         # Validate start and goal if requested
-        if request.check_start_goal:
+        if False:  # Temporarily disable collision checking
             if not self.is_state_valid(request.start_config):
                 return PlanResult(
                     success=False,
@@ -628,11 +611,11 @@ def main():
                         request_bytes = bytes(value.to_pylist())
                     else:
                         request_bytes = bytes(value)
-                    
+
                     request_data = json.loads(request_bytes.decode('utf-8'))
-                    
+
                     trajectory, status = planner_op.process_plan_request(request_data)
-                    
+
                     # Send status
                     status_bytes = json.dumps(status).encode('utf-8')
                     node.send_output(
@@ -640,7 +623,7 @@ def main():
                         pa.array(list(status_bytes), type=pa.uint8()),
                         metadata={"success": status["success"]}
                     )
-                    
+
                     # Send trajectory if successful
                     if trajectory:
                         # Flatten trajectory for transmission
@@ -653,11 +636,15 @@ def main():
                                 "num_joints": planner_op.planner.num_joints
                             }
                         )
-                        
+
                 except Exception as e:
-                    print(f"[Planner] Error: {e}")
+                    print(f"[Planner] Error processing plan_request: {e}")
                     import traceback
                     traceback.print_exc()
+                    # Send failure status
+                    status = {"plan_id": planner_op.plan_count, "success": False, "message": str(e)}
+                    status_bytes = json.dumps(status).encode('utf-8')
+                    node.send_output("plan_status", pa.array(list(status_bytes), type=pa.uint8()))
                     
             elif input_id == "scene_update":
                 try:

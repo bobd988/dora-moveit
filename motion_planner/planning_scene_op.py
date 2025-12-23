@@ -409,7 +409,12 @@ def main():
                 # Update robot state
                 try:
                     joints = event["value"].to_numpy()
-                    scene_op.update_robot_state(joints)
+                    # Extract arm joints: skip freejoint (7) + wheels (6) = 13
+                    if len(joints) >= 20:
+                        arm_joints = joints[13:20]
+                    else:
+                        arm_joints = joints[:7]
+                    scene_op.update_robot_state(arm_joints)
                 except Exception as e:
                     print(f"[Scene] Robot state error: {e}")
                     
